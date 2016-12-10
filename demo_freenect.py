@@ -1,8 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 from freenect import sync_get_depth as get_depth, sync_get_video as get_video
 import cv2 as cv  
 import numpy as np
-# -*- coding: utf-8 -*-
+
   
 faceCascade = cv.CascadeClassifier('haarcascade_frontalface_alt.xml')
 eyeCascade = cv.CascadeClassifier('haarcascade_eye.xml')
