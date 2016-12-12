@@ -127,7 +127,7 @@ def landmarkDetection():
         i = 0
         color = (0,0,0)
         for p in shape.parts():
-            showPoints(p, i)
+            #showPoints(p, i)
             #print(p)
             makeFacePoints(p, i, shape, scale_x, scale_y, tab_points, face_view)
             i = i + 1
@@ -192,7 +192,7 @@ def AUCalculation():
     #AUtable[0:64] = False
 
     # 6 : Cheek Raiser
-
+    # On check l'ouverture de l'oeil
     # 12 : Lip Corner Puller
     if (
             max(tab_points[50][1], tab_points[51][1]) > max(tab_points[54][1],tab_points[48][1])
@@ -200,19 +200,24 @@ def AUCalculation():
         AUtable[12]= True;
 
     # 26 : Jaw drop
-
+    jaw_drop_length =  tab_points[67][1] - tab_points[63][1]
+    print(jaw_drop_length)
+    if (jaw_drop_length > 10):
+        AUtable[26] = True;
 
 def emotionDetector():
     global AUtable
     emotion = ""
-    if(AUtable[12]):
-        emotion = "smile"
+    if (AUtable[12]):
+        emotion = "heureux"
+    elif (AUtable[26]):
+        emotion = "surpris"
     else:
         emotion = "???"
     print(emotion)
     cv.putText(rgb,
                emotion,
-               (450, 50),
+               (400, 50),
                cv.FONT_HERSHEY_SIMPLEX,
                2,
                (255, 255, 255)
