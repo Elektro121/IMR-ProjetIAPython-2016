@@ -127,7 +127,7 @@ def landmarkDetection():
         i = 0
         color = (0,0,0)
         for p in shape.parts():
-            #showPoints(p, i)
+            showPoints(p, i)
             #print(p)
             makeFacePoints(p, i, shape, scale_x, scale_y, tab_points, face_view)
             i = i + 1
@@ -190,41 +190,52 @@ def AUCalculation():
     global AUtable
     AUtable = [False for i in range(64)]
     #AUtable[0:64] = False
+    # 5 : Ouverture entre la paupière supérieure et les sourcils
+    AU5_44_24 = calculate_distance(tab_points[44], tab_points[24])
+    AU5_37_19 = calculate_distance(tab_points[37], tab_points[19])
+    print(mean([AU5_37_19, AU5_44_24]))
+    if(mean([AU5_37_19, AU5_44_24])>34):
+        AUtable[5] = True;
 
     # 6 : Cheek Raiser
     # On check l'ouverture de l'oeil
     # 12 : Lip Corner Puller
+    AU12_lip_60_64 = calculate_distance(tab_points[60], tab_points[64])
+    AU12_lip_down = calculate_distance(tab_points[60], tab_points[57])
     if (
-            max(tab_points[50][1], tab_points[51][1]) > max(tab_points[54][1],tab_points[48][1])
+        tab_points[51][1] > max(tab_points[54][1], tab_points[48][1])
     ):
         AUtable[12]= True;
 
     # 26 : Jaw drop
     jaw_drop_length =  tab_points[67][1] - tab_points[63][1]
-    print(jaw_drop_length)
-    if (jaw_drop_length > 10):
+    #print(jaw_drop_length)
+    if (jaw_drop_length > 15):
         AUtable[26] = True;
 
 def emotionDetector():
     global AUtable
     emotion = ""
     if (AUtable[12]):
-        emotion = "heureux"
-    elif (AUtable[26]):
-        emotion = "surpris"
+        emotion = "Joie"
+    elif ((AUtable[26] and AUtable[5])):
+        emotion = "Surprise"
     else:
-        emotion = "???"
+        emotion = "Neutre"
     print(emotion)
     cv.putText(rgb,
                emotion,
-               (400, 50),
+               (350, 50),
                cv.FONT_HERSHEY_SIMPLEX,
                2,
                (255, 255, 255)
                )
 
+def calculate_distance(p1,p2):
+    return (math.sqrt(pow(p2[0] - p1[0], 2) + pow(p2[1] - p1[1], 2)))
 
-
+def mean(numbers):
+    return float(sum(numbers)) / max(len(numbers), 1)
 
 ctx = freenect.init()
 dev = freenect.open_device(ctx, freenect.num_devices(ctx))
